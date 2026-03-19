@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemia Czyszczenia</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #06080f;
+  --accent: #00e5b0;
+  --accent2: #4d9fff;
+  --accent3: #ff5e5e;
+  --text: #edf0f7;
+  --muted: #6b7a92;
+  --surface: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  width:100%; height:100%;
+  overflow:hidden;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Syne', sans-serif;
+}
+
+/* ── SLIDE CONTAINER ── */
+#deck {
+  width:100%; height:100%;
+  position:relative;
+}
+
+.slide {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:60px 80px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.5s ease, transform 0.5s ease;
+  transform:translateX(60px);
+}
+.slide.active {
+  opacity:1;
+  pointer-events:all;
+  transform:translateX(0);
+}
+.slide.exit-left {
+  opacity:0;
+  transform:translateX(-60px);
+}
+
+/* backgrounds per slide */
+.slide::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+.slide-1::before {
+  background:
+    radial-gradient(ellipse 70% 70% at 80% 20%, rgba(0,229,176,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(77,159,255,0.08) 0%, transparent 50%);
+}
+.slide-2::before {
+  background: radial-gradient(ellipse 80% 60% at 30% 40%, rgba(0,229,176,0.08) 0%, transparent 60%);
+}
+.slide-3::before {
+  background: radial-gradient(ellipse 60% 60% at 70% 60%, rgba(77,159,255,0.10) 0%, transparent 60%);
+}
+.slide-4::before {
+  background: radial-gradient(ellipse 70% 50% at 50% 30%, rgba(0,229,176,0.07) 0%, transparent 55%);
+}
+.slide-5::before {
+  background: radial-gradient(ellipse 90% 60% at 20% 50%, rgba(255,94,94,0.07) 0%, transparent 55%);
+}
+.slide-6::before {
+  background: radial-gradient(ellipse 60% 60% at 75% 40%, rgba(77,159,255,0.10) 0%, transparent 55%);
+}
+.slide-7::before {
+  background: radial-gradient(ellipse 80% 70% at 50% 50%, rgba(0,229,176,0.09) 0%, transparent 60%);
+}
+.slide-8::before {
+  background: radial-gradient(ellipse 60% 60% at 30% 30%, rgba(255,94,94,0.08) 0%, transparent 55%);
+}
+.slide-9::before {
+  background:
+    radial-gradient(ellipse 50% 50% at 20% 20%, rgba(0,229,176,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(77,159,255,0.08) 0%, transparent 55%);
+}
+
+.slide-inner {
+  position:relative;
+  z-index:1;
+  width:100%;
+  max-width:1000px;
+}
+
+/* ── TYPOGRAPHY ── */
+.label {
+  font-size:0.68rem;
+  font-weight:700;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:16px;
+}
+h1 {
+  font-family:'Cormorant Garamond', serif;
+  font-size:clamp(3.5rem, 8vw, 7rem);
+  font-weight:700;
+  line-height:1.0;
+  letter-spacing:-1px;
+}
+h1 em { color:var(--accent); font-style:italic; }
+h2 {
+  font-family:'Cormorant Garamond', serif;
+  font-size:clamp(2.2rem, 5vw, 3.8rem);
+  font-weight:700;
+  line-height:1.1;
+  margin-bottom:28px;
+}
+h2 em { color:var(--accent); font-style:italic; }
+h3 {
+  font-family:'Cormorant Garamond', serif;
+  font-size:1.4rem;
+  font-weight:700;
+  margin-bottom:8px;
+}
+p { color:var(--muted); line-height:1.75; font-size:0.92rem; }
+strong { color:var(--text); font-weight:700; }
+
+/* ── SUBTITLE (hero) ── */
+.subtitle {
+  font-size:1.05rem;
+  color:var(--muted);
+  max-width:520px;
+  line-height:1.75;
+  margin-top:20px;
+}
+
+/* ── GRID LAYOUTS ── */
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+.grid-4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:16px; }
+@media(max-width:700px) {
+  .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; }
+  .slide { padding:40px 28px; }
+}
+
+/* ── CARD ── */
+.card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:22px;
+  transition:border-color 0.3s;
+  position:relative;
+  overflow:hidden;
+}
+.card::after {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.card:hover { border-color:rgba(0,229,176,0.25); }
+.card:hover::after { opacity:1; }
+.card-icon { font-size:1.8rem; margin-bottom:12px; }
+
+/* ── STEP LIST ── */
+.steps { display:flex; flex-direction:column; gap:16px; }
+.step {
+  display:grid;
+  grid-template-columns:40px 1fr;
+  gap:16px;
+  align-items:start;
+  padding:18px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.step-n {
+  font-family:'Cormorant Garamond', serif;
+  font-size:2rem;
+  font-weight:700;
+  color:rgba(0,229,176,0.25);
+  line-height:1;
+}
+
+/* ── TABLE ── */
+.chem-table { width:100%; border-collapse:collapse; }
+.chem-table th {
+  text-align:left;
+  font-size:0.66rem;
+  font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--muted);
+  padding:10px 14px;
+  border-bottom:1px solid var(--border);
+}
+.chem-table td {
+  padding:13px 14px;
+  font-size:0.84rem;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  vertical-align:middle;
+}
+.chem-table tr:last-child td { border-bottom:none; }
+.chem-table tr:hover td { background:rgba(255,255,255,0.03); }
+.cf { color:var(--accent); font-weight:700; font-size:0.8rem; }
+.cn { font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:700; }
+.badge {
+  display:inline-block;
+  padding:2px 9px;
+  border-radius:100px;
+  font-size:0.68rem;
+  font-weight:700;
+}
+.bh { background:rgba(255,94,94,0.12); color:#ff5e5e; border:1px solid rgba(255,94,94,0.25); }
+.bm { background:rgba(255,193,7,0.1);  color:#ffc107; border:1px solid rgba(255,193,7,0.2); }
+.bl { background:rgba(0,229,176,0.08); color:var(--accent); border:1px solid rgba(0,229,176,0.2); }
+
+/* ── HIGHLIGHT BOX ── */
+.hbox {
+  border-left:3px solid var(--accent);
+  background:var(--surface);
+  border-radius:0 10px 10px 0;
+  padding:18px 22px;
+  margin-bottom:20px;
+}
+.hbox p { font-size:0.88rem; }
+
+/* ── STAT ROW ── */
+.stats { display:flex; gap:24px; margin-bottom:28px; flex-wrap:wrap; }
+.stat {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:18px 22px;
+  min-width:140px;
+  text-align:center;
+}
+.stat-v {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.2rem;
+  font-weight:700;
+  color:var(--accent);
+  line-height:1;
+  margin-bottom:6px;
+}
+.stat-l { font-size:0.72rem; color:var(--muted); letter-spacing:0.5px; }
+
+/* ── REACTION BOX ── */
+.rxn {
+  background:rgba(0,229,176,0.06);
+  border:1px solid rgba(0,229,176,0.2);
+  border-radius:10px;
+  padding:14px 20px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.15rem;
+  color:var(--text);
+  letter-spacing:0.5px;
+  margin:10px 0;
+  text-align:center;
+}
+
+/* ── WARNING BOX ── */
+.warn {
+  background:rgba(255,94,94,0.07);
+  border:1px solid rgba(255,94,94,0.2);
+  border-radius:10px;
+  padding:16px 20px;
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+}
+.warn-icon { font-size:1.5rem; }
+.warn p { color:rgba(255,200,200,0.8); font-size:0.88rem; }
+
+/* ── NAV UI ── */
+#nav-bar {
+  position:fixed;
+  bottom:28px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  gap:16px;
+  background:rgba(10,14,20,0.85);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--border);
+  border-radius:100px;
+  padding:10px 20px;
+  z-index:200;
+}
+.nav-btn {
+  background:none;
+  border:1px solid var(--border);
+  color:var(--text);
+  width:36px; height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  font-size:1rem;
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.2s, border-color 0.2s;
+}
+.nav-btn:hover { background:rgba(0,229,176,0.12); border-color:var(--accent); }
+.nav-btn:disabled { opacity:0.25; cursor:default; }
+
+#slide-counter {
+  font-size:0.78rem;
+  font-weight:700;
+  letter-spacing:2px;
+  color:var(--muted);
+  min-width:60px;
+  text-align:center;
+}
+#slide-counter span { color:var(--accent); }
+
+/* dots */
+#dots { display:flex; gap:6px; align-items:center; }
+.dot {
+  width:6px; height:6px;
+  border-radius:50%;
+  background:var(--border);
+  transition:background 0.3s, transform 0.3s;
+  cursor:pointer;
+}
+.dot.active { background:var(--accent); transform:scale(1.4); }
+
+/* slide number watermark */
+.slide-num-mark {
+  position:absolute;
+  top:28px; right:32px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:5rem;
+  font-weight:700;
+  color:rgba(255,255,255,0.025);
+  line-height:1;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── FORMULA DIAGRAM (slide 3) ── */
+.micelle-diagram {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  margin:8px 0;
+}
+.micelle-row {
+  display:flex;
+  gap:4px;
+}
+.mol {
+  font-size:0.7rem;
+  padding:4px 8px;
+  border-radius:6px;
+  font-weight:700;
+  letter-spacing:0.5px;
+}
+.mol-h { background:rgba(77,159,255,0.15); color:var(--accent2); border:1px solid rgba(77,159,255,0.2); }
+.mol-l { background:rgba(0,229,176,0.12); color:var(--accent); border:1px solid rgba(0,229,176,0.2); }
+
+/* ── PROGRESS BAR ── */
+#progress {
+  position:fixed;
+  top:0; left:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--accent), var(--accent2));
+  transition:width 0.4s ease;
+  z-index:300;
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div id="deck">
+
+  <!-- SLIDE 1: HERO -->
+  <div class="slide slide-1 active" data-index="0">
+    <div class="slide-num-mark">1</div>
+    <div class="slide-inner">
+      <div class="label">Chemia — Prezentacja</div>
+      <h1>Brud.<br><em>Chemia</em><br>Czystości.</h1>
+      <p class="subtitle">Czym jest brud na poziomie molekularnym, jak środki czyszczące go usuwają i co tak naprawdę kryje się w składzie Domestosu.</p>
+      <div style="margin-top:36px; display:flex; gap:16px; flex-wrap:wrap;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:8px 20px;font-size:0.78rem;color:var(--muted);">📌 9 slajdów</div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:8px 20px;font-size:0.78rem;color:var(--muted);">⌨️ Strzałki ← → lub przyciski</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: CO TO BRUD -->
+  <div class="slide slide-2" data-index="1">
+    <div class="slide-num-mark">2</div>
+    <div class="slide-inner">
+      <div class="label">01 — Definicja</div>
+      <h2>Czym jest <em>brud</em>?</h2>
+      <div class="grid-2">
+        <div>
+          <p style="margin-bottom:16px;">Brud to zbiorcza nazwa dla <strong>niepożądanych substancji</strong> obecnych na powierzchniach. Nie jest to pojęcie precyzyjnie chemiczne — brud może być organiczny, nieorganiczny, biologiczny lub mieszany.</p>
+          <div class="hbox">
+            <p>Brud "przykleja się" dzięki <strong>siłom van der Waalsa</strong>, wiązaniom wodorowym i oddziaływaniom elektrostatycznym między zanieczyszczeniami a powierzchnią.</p>
+          </div>
+          <p>Kluczowe pytanie: <strong style="color:var(--accent)">jak związać brud z detergentem, by oderwać go od powierzchni?</strong></p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card"><div class="card-icon">🧈</div><h3>Tłuszcze & oleje</h3><p>Lipidy, triglicerydy — niepolarne, nie mieszają się z wodą.</p></div>
+          <div class="card"><div class="card-icon">🪨</div><h3>Sole mineralne</h3><p>Kamień wapniowy (CaCO₃), rdza (Fe₂O₃) — wymagają kwasów.</p></div>
+          <div class="card"><div class="card-icon">🦠</div><h3>Materia biologiczna</h3><p>Bakterie, grzyby, białka — podatne na enzymy i utleniacze.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: SURFAKTANTY -->
+  <div class="slide slide-3" data-index="2">
+    <div class="slide-num-mark">3</div>
+    <div class="slide-inner">
+      <div class="label">02 — Mechanizm I</div>
+      <h2>Surfaktanty<br>& <em>micele</em></h2>
+      <div class="grid-2">
+        <div>
+          <p style="margin-bottom:16px;">Cząsteczka surfaktantu ma dwa końce: <strong style="color:var(--accent2)">hydrofilowy</strong> (lubi wodę) i <strong style="color:var(--accent)">hydrofobowy</strong> (lubi tłuszcz).</p>
+          <p style="margin-bottom:16px;">Powyżej <strong>krytycznego stężenia micelarnego (CMC)</strong> tworzą kuliste micele otaczające kroplę tłuszczu — umożliwiając jej wypłukanie wodą.</p>
+          <div class="rxn">R-SO₄⁻ Na⁺ → koniec hydrofilowy + ogon hydrofobowy</div>
+          <p style="font-size:0.82rem;color:var(--muted);margin-top:8px;">Typowe surfaktanty: SLS (laurylosiarczan sodu), SLES, ABS (alkilobenzenosulfonian)</p>
+        </div>
+        <div>
+          <div class="card" style="text-align:center;">
+            <div style="font-size:0.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;">Schemat miceli</div>
+            <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:160px;height:160px;">
+              <div style="width:70px;height:70px;background:rgba(0,229,176,0.1);border:2px dashed rgba(0,229,176,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:var(--accent);">TŁUSZCZ</div>
+              <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:1.2rem;">🔵</div>
+              <div style="position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:1.2rem;">🔵</div>
+              <div style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:1.2rem;">🔵</div>
+              <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:1.2rem;">🔵</div>
+              <div style="position:absolute;top:22px;left:22px;font-size:1rem;">🔵</div>
+              <div style="position:absolute;top:22px;right:22px;font-size:1rem;">🔵</div>
+              <div style="position:absolute;bottom:22px;left:22px;font-size:1rem;">🔵</div>
+              <div style="position:absolute;bottom:22px;right:22px;font-size:1rem;">🔵</div>
+            </div>
+            <div style="margin-top:12px;font-size:0.72rem;color:var(--muted);">🔵 = cząsteczka surfaktantu<br>ogon w środku, głowa na zewnątrz</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: KWAS-ZASADA + UTLENIANIE -->
+  <div class="slide slide-4" data-index="3">
+    <div class="slide-num-mark">4</div>
+    <div class="slide-inner">
+      <div class="label">02 — Mechanizmy II & III</div>
+      <h2>Reakcje chemiczne<br>w <em>czyszczeniu</em></h2>
+      <div class="grid-2">
+        <div>
+          <h3 style="color:var(--accent);margin-bottom:10px;">⚗️ Kwas–Zasada</h3>
+          <p style="margin-bottom:10px;"><strong>Zasady (NaOH, K₂CO₃)</strong> rozkładają tłuszcze przez zmydlanie:</p>
+          <div class="rxn">tłuszcz + NaOH → mydło + glicerol</div>
+          <p style="margin-top:10px;margin-bottom:10px;"><strong>Kwasy (HCl, kwas cytrynowy)</strong> rozpuszczają kamień:</p>
+          <div class="rxn">CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂↑</div>
+        </div>
+        <div>
+          <h3 style="color:var(--accent2);margin-bottom:10px;">⚡ Utlenianie</h3>
+          <p style="margin-bottom:10px;">Aktywny chlor (HOCl) to silny utleniacz:</p>
+          <div class="rxn" style="background:rgba(77,159,255,0.07);border-color:rgba(77,159,255,0.25);">Cl₂ + H₂O ⇌ HCl + HOCl</div>
+          <p style="margin-top:10px;"><strong>HOCl</strong> penetruje błonę komórkową bakterii i <strong>utlenia białka enzymatyczne</strong> → śmierć komórki.</p>
+          <p style="margin-top:10px;">Dodatkowo niszczy struktury chromoforów → <strong style="color:var(--accent2)">wybielanie</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: ENZYMY + SEKWESTRACJA -->
+  <div class="slide slide-5" data-index="4">
+    <div class="slide-num-mark">5</div>
+    <div class="slide-inner">
+      <div class="label">02 — Mechanizmy IV & V</div>
+      <h2>Enzymy &<br><em>sekwestracja</em></h2>
+      <div class="grid-2" style="align-items:start;">
+        <div>
+          <h3 style="margin-bottom:12px;">🧬 Enzymy biologiczne</h3>
+          <p style="margin-bottom:14px;">Stosowane głównie w proszach do prania. Działają jak biologiczne "nożyczki":</p>
+          <div class="steps">
+            <div class="step"><div class="step-n">1</div><div><h3>Proteazy</h3><p>Trawią białka — krew, jajko, mleko.</p></div></div>
+            <div class="step"><div class="step-n">2</div><div><h3>Lipazy</h3><p>Rozkładają tłuszcze i oleje.</p></div></div>
+            <div class="step"><div class="step-n">3</div><div><h3>Amylazy</h3><p>Hydrolizują skrobię (sos, mąka).</p></div></div>
+          </div>
+        </div>
+        <div>
+          <h3 style="margin-bottom:12px;">🧲 Sekwestracja jonów</h3>
+          <div class="hbox" style="margin-bottom:16px;">
+            <p>Jony Ca²⁺ i Mg²⁺ (twarda woda) inaktywują surfaktanty — <strong>"zmiękczenie" wody</strong> jest kluczowe.</p>
+          </div>
+          <p style="margin-bottom:10px;">Środki sekwestrujące (EDTA, fosforany, kwas cytrynowy) wiążą te jony w stabilne kompleksy, uniemożliwiając im reakcję z detergentem.</p>
+          <div class="rxn">Ca²⁺ + EDTA⁴⁻ → [Ca·EDTA]²⁻</div>
+          <p style="margin-top:10px;font-size:0.82rem;color:var(--muted);">Dlatego pralki mają osobny dozownik na sól zmiękczającą wodę.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: DOMESTOS INTRO -->
+  <div class="slide slide-6" data-index="5">
+    <div class="slide-num-mark">6</div>
+    <div class="slide-inner">
+      <div class="label">03 — Analiza składu</div>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;flex-wrap:wrap;">
+        <h2 style="margin-bottom:0;">Domestos<br><em>Thick Bleach</em></h2>
+        <div style="background:linear-gradient(135deg,#00b894,#0099ff);color:white;font-weight:700;font-size:0.72rem;letter-spacing:2px;text-transform:uppercase;padding:8px 18px;border-radius:100px;">Unilever</div>
+      </div>
+      <div class="hbox" style="margin-bottom:20px;">
+        <p>Domestos to środek <strong>dezynfekująco-wybielający</strong> na bazie podchloryny sodu. Zabija 99,9% bakterii, wirusów i grzybów. Dostępny w Polsce w kilku wariantach — poniżej skład <em>Original</em>.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-v">~pH 13</div><div class="stat-l">Odczyn alkaliczny</div></div>
+        <div class="stat"><div class="stat-v">4,5%</div><div class="stat-l">Aktywny chlor</div></div>
+        <div class="stat"><div class="stat-v">NaOCl</div><div class="stat-l">Główny składnik</div></div>
+        <div class="stat"><div class="stat-v">~90%</div><div class="stat-l">Woda (nośnik)</div></div>
+      </div>
+      <p style="font-size:0.85rem;">Wysoka zasadowość (NaOH) jest <strong>celowa</strong> — stabilizuje podchloryn, zapobiegając rozpadowi do trującego gazowego Cl₂.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: SKŁADNIKI TABELA -->
+  <div class="slide slide-7" data-index="6">
+    <div class="slide-num-mark">7</div>
+    <div class="slide-inner">
+      <div class="label">03 — Składniki</div>
+      <h2>Skład<br><em>molekularny</em></h2>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+        <table class="chem-table">
+          <thead>
+            <tr>
+              <th>Składnik</th>
+              <th>Wzór</th>
+              <th>Rola</th>
+              <th>Ryzyko</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="cn">Podchloryn sodu</span></td>
+              <td><span class="cf">NaOCl</span></td>
+              <td style="color:var(--muted)">Dezynfekcja, wybielanie, niszczenie biofilmów</td>
+              <td><span class="badge bh">Wysoki</span></td>
+            </tr>
+            <tr>
+              <td><span class="cn">Wodorotlenek sodu</span></td>
+              <td><span class="cf">NaOH</span></td>
+              <td style="color:var(--muted)">Stabilizuje pH, zapobiega wydzielaniu Cl₂</td>
+              <td><span class="badge bh">Wysoki</span></td>
+            </tr>
+            <tr>
+              <td><span class="cn">Surfaktant niejonowy</span></td>
+              <td><span class="cf">R-(OCH₂CH₂)ₙ-OH</span></td>
+              <td style="color:var(--muted)">Zwilżalność, penetracja, zagęszczenie (żel)</td>
+              <td><span class="badge bm">Średni</span></td>
+            </tr>
+            <tr>
+              <td><span class="cn">Chlorek sodu</span></td>
+              <td><span class="cf">NaCl</span></td>
+              <td style="color:var(--muted)">Gęstość i lepkość produktu</td>
+              <td><span class="badge bl">Niski</span></td>
+            </tr>
+            <tr>
+              <td><span class="cn">Woda</span></td>
+              <td><span class="cf">H₂O</span></td>
+              <td style="color:var(--muted)">Rozpuszczalnik, ~90% składu</td>
+              <td><span class="badge bl">Brak</span></td>
+            </tr>
+            <tr>
+              <td><span class="cn">Środek zagęszczający</span></td>
+              <td><span class="cf">polimer</span></td>
+              <td style="color:var(--muted)">Żelowa konsystencja (przylega do muszli)</td>
+              <td><span class="badge bl">Niski</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: BEZPIECZENSTWO -->
+  <div class="slide slide-8" data-index="7">
+    <div class="slide-num-mark">8</div>
+    <div class="slide-inner">
+      <div class="label">04 — Bezpieczeństwo</div>
+      <h2>Zagrożenia &<br><em>zasady użycia</em></h2>
+      <div class="grid-2">
+        <div>
+          <div class="warn" style="margin-bottom:16px;">
+            <div class="warn-icon">⛔</div>
+            <div><p><strong style="color:#ff8888">Nigdy nie mieszaj</strong> Domestosu z kwasem (ocet, środki do łazienki) → uwalnia się Cl₂ (trujący gaz). Z amoniakiem → chloraminy drażniące drogi oddechowe.</p></div>
+          </div>
+          <div class="steps" style="gap:10px;">
+            <div class="step"><div class="step-n">✓</div><div><h3>Wentylacja</h3><p>Używaj przy otwartym oknie. Opary chloru drażnią błony śluzowe.</p></div></div>
+            <div class="step"><div class="step-n">✓</div><div><h3>Rękawice</h3><p>NaOH + NaOCl uszkadzają skórę. Zawsze rękawice gumowe.</p></div></div>
+            <div class="step"><div class="step-n">✓</div><div><h3>Kontakt z oczami</h3><p>Spłukać obficie wodą przez 15 min. Wezwać pomoc.</p></div></div>
+          </div>
+        </div>
+        <div>
+          <h3 style="margin-bottom:14px;">Symbole GHS</h3>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="card" style="display:flex;align-items:center;gap:14px;">
+              <span style="font-size:2rem;">🔶</span>
+              <div><h3 style="font-size:1rem;">GHS05 — Korozja</h3><p>Oparzenia skóry i uszkodzenia oczu, korozja metali</p></div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:14px;">
+              <span style="font-size:2rem;">⚠️</span>
+              <div><h3 style="font-size:1rem;">GHS07 — Drażniący</h3><p>Podrażnienie skóry, oczu, może powodować alergię</p></div>
+            </div>
+            <div class="card" style="display:flex;align-items:center;gap:14px;">
+              <span style="font-size:2rem;">🌊</span>
+              <div><h3 style="font-size:1rem;">GHS09 — Środowisko</h3><p>Szkodliwy dla organizmów wodnych, tworzy chloroorganiki</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: PODSUMOWANIE -->
+  <div class="slide slide-9" data-index="8">
+    <div class="slide-num-mark">9</div>
+    <div class="slide-inner">
+      <div class="label">05 — Podsumowanie</div>
+      <h2><em>Wnioski</em></h2>
+      <div class="grid-2" style="margin-bottom:28px;">
+        <div class="card"><div class="card-icon">🔬</div><h3>Brud to chemia</h3><p>Tłuszcze, sole, biofilm — każda kategoria wymaga innego mechanizmu chemicznego. Jeden środek nie usuwa wszystkiego.</p></div>
+        <div class="card"><div class="card-icon">⚡</div><h3>Kluczowe mechanizmy</h3><p>Micelizacja, zmydlanie, utlenianie chlorem, enzymatyczna hydroliza, sekwestracja — to "toolbox" chemika czyszczenia.</p></div>
+        <div class="card"><div class="card-icon">🧪</div><h3>Domestos = NaOCl</h3><p>Aktywny chlor w środowisku zasadowym (pH ≈ 13) utlenia białka drobnoustrojów. Wysokie pH stabilizuje preparat.</p></div>
+        <div class="card"><div class="card-icon">🛡️</div><h3>Wiedza = bezpieczeństwo</h3><p>Znajomość składu i reakcji zapobiega wypadkom. Nigdy nie mieszaj środków czyszczących bez wiedzy o ich chemii.</p></div>
+      </div>
+      <div style="text-align:center;color:var(--muted);font-size:0.8rem;letter-spacing:1px;border-top:1px solid var(--border);padding-top:20px;">
+        Prezentacja z chemii &nbsp;·&nbsp; <strong style="color:var(--accent)">Claude AI</strong> &nbsp;·&nbsp; 2026
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- NAV BAR -->
+<div id="nav-bar">
+  <button class="nav-btn" id="btn-prev" title="Poprzedni (←)">&#8592;</button>
+  <div id="dots"></div>
+  <div id="slide-counter"><span id="cur">1</span> / 9</div>
+  <button class="nav-btn" id="btn-next" title="Następny (→)">&#8594;</button>
+</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+let current = 0;
+let animating = false;
+
+const dotsEl = document.getElementById('dots');
+const curEl = document.getElementById('cur');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const progress = document.getElementById('progress');
+
+// Build dots
+slides.forEach((_,i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i===0?' active':'');
+  d.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(d);
+});
+
+function updateUI() {
+  document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i===current));
+  curEl.textContent = current + 1;
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === total - 1;
+  progress.style.width = ((current+1)/total*100) + '%';
+}
+
+function goTo(idx) {
+  if (animating || idx === current || idx < 0 || idx >= total) return;
+  animating = true;
+
+  const dir = idx > current ? 1 : -1;
+  const outSlide = slides[current];
+  const inSlide  = slides[idx];
+
+  // prep incoming
+  inSlide.style.transform = `translateX(${dir * 60}px)`;
+  inSlide.style.opacity = '0';
+  inSlide.style.transition = 'none';
+  inSlide.classList.add('active');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // animate out
+      outSlide.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      outSlide.style.opacity = '0';
+      outSlide.style.transform = `translateX(${-dir * 60}px)`;
+
+      // animate in
+      inSlide.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      inSlide.style.opacity = '1';
+      inSlide.style.transform = 'translateX(0)';
+
+      setTimeout(() => {
+        outSlide.classList.remove('active');
+        outSlide.style.transform = '';
+        outSlide.style.opacity  = '';
+        outSlide.style.transition = '';
+        inSlide.style.transition = '';
+        current = idx;
+        updateUI();
+        animating = false;
+      }, 420);
+    });
+  });
+}
+
+function next() { goTo(current + 1); }
+function prev() { goTo(current - 1); }
+
+btnNext.addEventListener('click', next);
+btnPrev.addEventListener('click', prev);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prev();
+});
+
+// Swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+}, {passive:true});
+
+updateUI();
+</script>
+</body>
+</html>
